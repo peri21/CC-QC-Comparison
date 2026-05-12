@@ -1,0 +1,31 @@
+{
+  "n_features": 2,
+  "n_train": 80,
+  "n_test": 20,
+  "mlp_accuracy_test": 0.8,
+  "mlp_accuracy_train": 0.975,
+  "mlp_cv_mean": 0.95,
+  "mlp_cv_std": 0.04472135954999579,
+  "mlp_train_time_s": 0.17838675400003012,
+  "mlp_n_parameters": 37,
+  "mlp_n_iter": 500,
+  "mlp_hidden_layers": [
+    4,
+    4
+  ],
+  "mlp_optimizer": "adam",
+  "qnn_accuracy_test_sim": 0.6,
+  "qnn_accuracy_train_sim": 0.7125,
+  "qnn_accuracy_test_real": null,
+  "qnn_train_time_sim_s": 1.8585925739998856,
+  "qnn_n_parameters": 8,
+  "qnn_n_qubits": 2,
+  "qnn_feature_map": "ZZFeatureMap",
+  "qnn_ansatz": "RealAmplitudes",
+  "qnn_observable": "IZ",
+  "qnn_optimizer": "COBYLA",
+  "qnn_loss": "cross_entropy",
+  "qnn_final_loss": -6.0758754302050475,
+  "qnn_real_hw_run": false,
+  "qnn_backend": null
+}
