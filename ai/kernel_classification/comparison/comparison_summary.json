@@ -17,5 +17,9 @@
   "qksvm_n_trainable_params": 0,
   "qksvm_n_support_vectors": 49,
   "qksvm_real_hw_run": false,
-  "qksvm_backend": null
+  "qksvm_backend": null,
+  "svm_4f_accuracy_test": 0.8,
+  "svm_4f_train_time_s": 0.0014869579990772763,
+  "qksvm_4f_accuracy_test_sim": 0.7,
+  "qksvm_4f_total_time_s": 23.250077360000432
 }
