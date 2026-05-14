@@ -69,7 +69,10 @@
   ],
   "real_hw_run": false,
   "backend_name": null,
-  "accuracy_test_real": null,
+  "kernel_demo_n": null,
   "kernel_real_time_s": null,
-  "y_pred_test_real": null
+  "kernel_corr_sim_real": null,
+  "kernel_mae_sim_real": null,
+  "K_demo_sim": null,
+  "K_demo_real": null
 }
