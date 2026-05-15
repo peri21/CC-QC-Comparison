@@ -45,7 +45,7 @@ Compara SVM clásico vs QKSVM (FidelityQuantumKernel) sobre Iris.
 
 ---
 
-## ai/neural_network — COMPLETO ✓
+## ai/neural_network — COMPLETO ✓✓ (incluyendo 4f real HW)
 
 Compara MLP clásico vs QNN (EstimatorQNN + NeuralNetworkClassifier) sobre Iris.
 
@@ -70,16 +70,17 @@ Compara MLP clásico vs QNN (EstimatorQNN + NeuralNetworkClassifier) sobre Iris.
 
 | | 2f sim | 2f real HW | 4f sim | 4f real HW |
 |--|--------|-----------|--------|-----------|
-| acc_test | 0.80 | **0.75** | 0.70 | ❌ no ejecutado |
-| acc_train | 0.775 | — | 0.6375 | — |
+| acc_test | 0.80 | **0.75** | 0.80 | **0.80** |
+| acc_train | 0.775 | — | 0.65 | — |
 | params | 6 | — | 8 | — |
-| backend | — | ibm_kingston | — | — |
+| backend | — | ibm_kingston | — | ibm_kingston |
+| quantum_s | — | 33 | — | 34 |
 
 **Por qué acc_train < acc_test**: el multi-start selecciona por mejor `acc_test` (sesgo), y el test set tiene solo 20 muestras (alta varianza estadística). No es sobreajuste.
 
 **Nota sobre la loss negativa**: `cross_entropy` en qiskit-ml sobre `EstimatorQNN` opera sobre valores de expectación en [-1,+1], produciendo pérdidas negativas. Más negativo = mejor. Escalas incomparables con la log-loss del MLP. La tabla summary tiene el aviso "⚠ different scales".
 
-**Pendiente opcional**: QNN 4f real HW — cambiar `N_FEATURES=4` y `RUN_ON_REAL_HW=True` en `qnn.ipynb` y ejecutar (~30s IBM, 4 qubits).
+**4f real HW completado** (sesión 2026-05-15): acc_test=0.80, mismo que simulador. Consumió 34 quantum_seconds en `ibm_kingston`.
 
 ### Comparison (`comparison/comparison.ipynb`)
 - 6 plots: accuracy, tiempo, curvas de loss, params vs accuracy, confusion matrices, 2f vs 4f
