@@ -40,6 +40,84 @@ Nota: `linear_queries` para n=5 (8.4) es anómalamente bajo respecto al valor es
 
 ---
 
+## ai/classification — COMPLETADO ✓
+
+Tres notebooks: `classical/svm.ipynb`, `quantum/vqc.ipynb`, `comparison/comparison.ipynb`.
+
+Compara clasificación binaria (Versicolor vs Virginica, dataset Iris) entre SVM clásico con kernel RBF y un Clasificador Cuántico Variacional (VQC) en simulación y hardware IBM real.
+
+**Resultados** (2 features: longitud y anchura del pétalo, 80 train / 20 test):
+
+| Modelo | Accuracy test | CV / multi-seed | Tiempo entrenamiento |
+|---|---|---|---|
+| SVM (clásico) | **85%** | 94.0% ± 3.7% | 0.003 s |
+| VQC simulador (media 3 runs) | 63.3% ± 9.4% | — | 271 s |
+| VQC simulador (run ref, seed=42) | 70% | — | — |
+| VQC hardware real (ibm_marrakesh) | **70%** | — | 164 s (inferencia) |
+
+**Experimento 4 features** (sepal + petal, todas):
+
+| Modelo | Accuracy test | Parámetros |
+|---|---|---|
+| SVM 4f | 80% | — |
+| VQC 4f (sim) | **50%** (azar) | 16 |
+
+**Plots generados** (6): `plot1_accuracy.png`, `plot2_training_time.png`, `plot3_vqc_loss.png`, `plot4_confusion_matrices.png`, `plot5_ratio.png`, `plot6_2f_vs_4f.png`
+
+**Resumen exportado**: `comparison_summary.json`
+
+**Decisiones técnicas**:
+- Dataset: solo clases 1 y 2 del Iris (Versicolor vs Virginica); clase 0 (Setosa) descartada por ser trivialmente separable
+- Escalado: SVM en [0,1] (MinMaxScaler); VQC en [0,π] (× π adicional para aprovechar el rango de las puertas de rotación)
+- Arquitectura VQC: `ZZFeatureMap(reps=2)` + `RealAmplitudes(reps=3)` = 8 parámetros entrenables (2 qubits)
+- Optimizador SPSA (300 iter): loss estanca en ~0.73 tras ~60 iteraciones → barren plateau, comportamiento esperado en NISQ
+- Multi-seed (semillas 42, 123, 7): alta varianza (±9.4%) → el modelo es sensible a la inicialización
+- VQC 4f = 50% (azar): el modelo con 4 qubits y 16 parámetros no aprende nada en este dataset con SPSA
+- Real HW = 70% (igual que sim): circuito de 2 qubits suficientemente superficial para sobrevivir el ruido de ibm_marrakesh
+- Entrenamiento solo en simulador; inferencia en real HW para evitar colas de cientos de iteraciones
+- `SamplerV2` + `generate_preset_pass_manager(optimization_level=1)`
+
+---
+
+## ai/kernel_classification — COMPLETADO ✓
+
+Tres notebooks: `classical/svm.ipynb`, `quantum/qksvm.ipynb`, `comparison/comparison.ipynb`.
+
+Compara clasificación binaria (Versicolor vs Virginica, dataset Iris) entre SVM clásico con kernel RBF y un Kernel SVM Cuántico (QKSVM) en simulación y hardware IBM real (solo análisis de ruido del kernel, no clasificación completa).
+
+**Resultados** (2 features: longitud y anchura del pétalo, 80 train / 20 test):
+
+| Modelo | Accuracy test | CV / notas | Tiempo total | Vectores de soporte |
+|---|---|---|---|---|
+| SVM (clásico) | **85%** | 94.0% ± 3.7% | 0.0016 s | 17 |
+| QKSVM simulador (2 qubits) | 60% | — | 20.47 s | 47 |
+| QKSVM hardware real | — | demo kernel 10 pts, Pearson r=0.9738 | 61.5 s (kernel) | — |
+
+**Experimento 4 features** (sépalos + pétalos, todas):
+
+| Modelo | Accuracy test |
+|---|---|
+| SVM 4f | 80% |
+| QKSVM 4f (sim) | **70%** (mejor que 2f — el kernel cuántico aprovecha el espacio de mayor dimensión) |
+
+**Plots generados** (5): `plot1_accuracy.png`, `plot2_time_breakdown.png`, `plot3_confusion_matrices.png`, `plot4_2f_vs_4f.png`, `plot5_kernel_noise.png`
+
+**Resumen exportado**: `comparison_summary.json`
+
+**Decisiones técnicas**:
+- Dataset: solo clases 1 y 2 del Iris (Versicolor vs Virginica); clase 0 (Setosa) descartada por ser trivialmente separable
+- Escalado: SVM en [0,1] (MinMaxScaler); QKSVM en [0,π] (× π adicional para aprovechar el rango de las puertas de rotación)
+- Arquitectura QKSVM: `ZZFeatureMap(reps=2)`, sin parámetros entrenables; kernel = fidelidad cuántica |⟨φ(x_i)|φ(x_j)⟩|²
+- Backend kernel: `FidelityQuantumKernel` + `ComputeUncompute`, `AerSimulator` para simulación
+- QKSVM acumula 47 vectores de soporte vs 17 del SVM clásico → el margen en el espacio cuántico es más difícil de separar
+- Tiempo dominado por kernel cuántico (99.99% del total): 20.47 s vs 0.0016 s del SVM
+- Hardware real: subconjunto demo de 10 puntos (5 por clase) para análisis de ruido del kernel; kernel completo (20×80=1600 pares) requeriría ~29 min de presupuesto QPU
+- `max_circuits_per_job=50` para evitar el límite por trabajo del IBM Open Plan (error 1305)
+- Backend hardware usado: `ibm_fez` (seleccionado por `least_busy()`)
+- `SamplerV2` + `generate_preset_pass_manager(optimization_level=1)`
+
+---
+
 ## cryptography/factoring — PENDIENTE RE-EJECUCIÓN ⏳
 
 Archivo único: `real_shor_comparison.ipynb`.
