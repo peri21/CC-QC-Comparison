@@ -17,7 +17,7 @@
   "activation": "relu",
   "optimizer": "adam",
   "n_parameters": 81,
-  "train_time_s": 0.15983521199814277,
+  "train_time_s": 0.14335177799512167,
   "n_iter": 500,
   "accuracy_test": 0.8,
   "accuracy_train": 0.9875,

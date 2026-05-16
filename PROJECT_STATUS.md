@@ -90,7 +90,7 @@ Compara clasificación binaria (Versicolor vs Virginica, dataset Iris) entre SVM
 | Modelo | Accuracy test | CV / notas | Tiempo total | Vectores de soporte |
 |---|---|---|---|---|
 | SVM (clásico) | **85%** | 94.0% ± 3.7% | 0.0016 s | 17 |
-| QKSVM simulador (2 qubits) | 60% | — | 20.47 s | 47 |
+| QKSVM simulador (2 qubits) | 70% | — | 14.35 s | 48 |
 | QKSVM hardware real | — | demo kernel 10 pts, Pearson r=0.9738 | 61.5 s (kernel) | — |
 
 **Experimento 4 features** (sépalos + pétalos, todas):
@@ -98,7 +98,9 @@ Compara clasificación binaria (Versicolor vs Virginica, dataset Iris) entre SVM
 | Modelo | Accuracy test |
 |---|---|
 | SVM 4f | 80% |
-| QKSVM 4f (sim) | **70%** (mejor que 2f — el kernel cuántico aprovecha el espacio de mayor dimensión) |
+| QKSVM 4f (sim) | 65% |
+
+Nota: la precisión del QKSVM varía entre ejecuciones (~60-70% en 2f) porque `BackendSamplerV2` con `AerSimulator` usa shots finitos sin semilla fija → varianza de ruido de muestreo en los valores del kernel.
 
 **Plots generados** (5): `plot1_accuracy.png`, `plot2_time_breakdown.png`, `plot3_confusion_matrices.png`, `plot4_2f_vs_4f.png`, `plot5_kernel_noise.png`
 
@@ -118,48 +120,88 @@ Compara clasificación binaria (Versicolor vs Virginica, dataset Iris) entre SVM
 
 ---
 
-## cryptography/factoring — PENDIENTE RE-EJECUCIÓN ⏳
+## ai/neural_network — COMPLETADO ✓
+
+Tres notebooks: `classical/mlp.ipynb`, `quantum/qnn.ipynb`, `comparison/comparison.ipynb`.
+
+Compara clasificación binaria (Versicolor vs Virginica, dataset Iris) entre un Perceptrón Multicapa (MLP) clásico y una Red Neuronal Cuántica (QNN) basada en `EstimatorQNN` + `NeuralNetworkClassifier`, en simulación y hardware IBM real.
+
+**Resultados** (2 features: longitud y anchura del pétalo, 80 train / 20 test):
+
+| Modelo | Accuracy test | Accuracy train | Tiempo | Parámetros | HW real |
+|---|---|---|---|---|---|
+| MLP (clásico) | **80%** | 97.5% | 0.12 s | 37 | — |
+| QNN simulador (2 qubits) | **80%** | 78.75% | ~5 s | **6** | — |
+| QNN hardware real (ibm_kingston) | **75%** | — | — | 6 | ✓ |
+
+**Experimento 4 features** (sépalos + pétalos, todas):
+
+| Modelo | Accuracy test | Accuracy train | Parámetros |
+|---|---|---|---|
+| MLP 4f | **80%** | 98.75% | 81 |
+| QNN 4f (sim) | **80%** | 58.75% | **8** |
+| QNN 4f (ibm_kingston) | **80%** | — | 8 |
+
+**Plots generados** (6): `plot1_accuracy.png`, `plot2_training_time.png`, `plot3_loss_curves.png`, `plot4_params_vs_accuracy.png`, `plot5_confusion_matrices.png`, `plot6_2f_vs_4f.png`
+
+**Resumen exportado**: `comparison_summary.json`
+
+**Decisiones técnicas**:
+- Dataset: solo clases 1 y 2 del Iris (Versicolor vs Virginica); clase 0 (Setosa) descartada por ser trivialmente separable
+- Escalado: MLP en [0,1] (MinMaxScaler); QNN en [0,π] (× π adicional para puertas de rotación)
+- Arquitectura MLP: capas ocultas (4,4) para 2f y (8,4) para 4f, activación ReLU, optimizador Adam, 500 iteraciones
+- Arquitectura QNN: `ZZFeatureMap(reps=3)` + `RealAmplitudes(reps=2)` + observable `Z⊗n` = 6 parámetros (2f), 8 parámetros (4f)
+- Diferencia clave respecto al VQC: `NeuralNetworkClassifier` + `EstimatorQNN` en lugar del `VQC` de alto nivel → control explícito sobre el observable, el gradiente (regla de desplazamiento de parámetros) y el optimizador
+- Multi-start COBYLA (N_STARTS=5, MAX_ITER=500): 5 arranques desde puntos aleatorios, se conserva el mejor → compensa la sensibilidad a la inicialización en paisajes no convexos
+- Observable `Z⊗n` (todos los qubits): captura correlaciones en todo el registro; eigenvalores ±1 → salida en [-1,1], compatible con codificación de etiquetas {-1,+1}
+- `StatevectorEstimator`: valores de expectación exactos (sin shots), usado en entrenamiento en simulador
+- QNN logra paridad con el MLP (80%) usando 6× menos parámetros en 2f y 10× menos en 4f
+- Degradación HW real mínima: 80%→75% en 2f; 80%=80% en 4f (circuito suficientemente superficial)
+- Entrenamiento solo en simulador; inferencia en real HW para evitar colas largas
+- Backend hardware usado: `ibm_kingston` (seleccionado por `least_busy()`)
+- `EstimatorV2` + `generate_preset_pass_manager(optimization_level=1)`
+
+---
+
+## cryptography/factoring — COMPLETADO ✓
 
 Archivo único: `real_shor_comparison.ipynb`.
 
 Compara factorización clásica (división por tentativa, Pollard's rho) vs algoritmo de Shor (cuántico) en simulación y hardware IBM real.
 
-**Resultados anteriores** — benchmark principal (n_count = 2·bits):
+**Resultados** — benchmark principal (n_count = 2·bits, RUNS=5, SHOTS=2000):
 
-| N | bits | n_count | QPE depth | Sim OK | Real OK | Backend |
-|---|------|---------|-----------|--------|---------|---------|
-| 15 | 4 | 8 | 11 | Yes (r=2) | Yes (r=2) | ibm_fez |
-| 21 | 5 | 10 | 13 | Yes (r=6) | **No** | ibm_fez |
-| 33 | 6 | 12 | 15 | Yes (r=2) | Yes (r=2) | ibm_fez |
-| 35 | 6 | 12 | 15 | Yes (r=12) | Yes ★ (r=16) | ibm_fez |
-| 77 | 7 | 14 | 17 | Yes (r=6) | N/A | — |
-| 91 | 7 | 14 | 17 | Yes (r=6) | N/A | — |
-| 143 | 8 | 16 | Skip | N/A | N/A | — |
-| 221 | 8 | 16 | Skip | N/A | N/A | — |
+| N | bits | n_count | Trial Q | Pollard Q | QPE depth | Sim OK | Real OK | top_prob | Tiempo real |
+|---|------|---------|---------|-----------|-----------|--------|---------|----------|-------------|
+| 15 | 4 | 8 | 2.0 | 1.2 | 11 | Yes (r=2) | Yes (r=2) | 18.2% | 33.5 s |
+| 21 | 5 | 10 | 2.0 | 1.2 | 13 | Yes (r=6) | Yes (r=2)† | 0.9% | 25.2 s |
+| 33 | 6 | 12 | 2.0 | 1.2 | 15 | Yes (r=2) | Yes ★ (r=18) | 1.9% | 65.2 s |
+| 35 | 6 | 12 | 3.0 | 1.4 | 15 | Yes (r=6) | Yes ★ (r=32) | 13.0% | 65.1 s |
+| 77 | 7 | 14 | 4.0 | 1.4 | 17 | Yes (r=6) | N/A | — | — |
+| 91 | 7 | 14 | 4.0 | 1.6 | 17 | Yes (r=6) | N/A | — | — |
+| 143 | 8 | 16 | 6.0 | 2.0 | Skip | N/A | N/A | — | — |
+| 221 | 8 | 16 | 7.0 | 4.0 | Skip | N/A | N/A | — | — |
 
-★ **Periodo espurio en N=35**: hardware reportó r=16 pero ord₃₅(2)=12. El ruido QPE produjo r=16 y el GCD tuvo éxito por casualidad (2⁸ mod 35=11, gcd(10,35)=5 ✓). Factorización asistida por ruido, no QPE genuino.
+† **Sub-periodo en N=21 real**: el QPE midió la fase 1/2 (pico k=3 de r=6), CF→r=2. gcd(2¹+1, 21)=3 ✓. Resultado legítimo, muy ruidoso (top_prob=0.9%).  
+★ **Periodos espurios en N=33 y N=35**: ord₃₃(2)=10 pero hardware devolvió r=18; ord₃₅(2)=12 pero hardware devolvió r=32. El ruido QPE produjo medidas que, via CF y GCD, dieron factores correctos por casualidad. Factorización asistida por ruido.
 
-**Resultados anteriores** — sweep de tasa de éxito (N=33, a=2, r=10, 10 trials cada punto):
+**Resultados** — sweep de tasa de éxito (N=33, a=2, ord=10, 10 trials cada punto):
 
 | n_count | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
 |---------|---|---|---|---|---|---|----|----|----|----|-----|
 | Éxito | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
 
-100% de éxito en todo el rango n_count=4..14. El algoritmo es robusto incluso por debajo del mínimo recomendado (2·⌈log₂N⌉=12) porque k=5 (fase 1/2 → r=2) siempre aparece entre los top-12 picos.
+100% de éxito en todo el rango n_count=4..14. El algoritmo es robusto incluso por debajo del mínimo recomendado (2·⌈log₂N⌉=12) porque k=5 (fase 1/2 → r=2) siempre aparece como pico dominante.
 
-**Estado**: el notebook tiene retoques pendientes de validar. Necesita re-ejecución completa (simulación + hardware real). Cola larga en IBM — aplazado.
+**Plots generados** (4): `plot1_complexity.png`, `plot2_success_rate.png`, `plot3_qpe_histogram.png`, `plot4_sim_vs_real.png`
 
-**Plots generados** (4):
-1. Escalado de complejidad: consultas clásicas vs profundidad QPE (escala log), extrapolado a tamaños de clave RSA
-2. Tasa de éxito del QPE vs n_count (sweep N=33)
-3. Histograma de medidas del QPE (N=15, a=7, n_count=8)
-4. Simulación vs hardware IBM real: éxito y probabilidad del resultado más frecuente (proxy de ruido)
+**Resumen exportado**: `shor_summary.json`
 
 **Decisiones técnicas**:
 - `SIM_MAX_N = 100`: para N > 100 la matriz unitaria 2^n_target × 2^n_target es intratable (>256×256 → transpilación impracticable)
-- `REAL_MAX_N = 35`: limita hardware real a circuitos de profundidad manejable (≤18 qubits)
+- `REAL_MAX_N = 35`: limita hardware real a circuitos de profundidad manejable (≤18 qubits total)
 - Unitario de permutación exacto U|y⟩ = |a·y mod N⟩: kickback de fase genuino, pero construirlo es exponencial en n_bits (solo viable para N pequeños)
 - Caché de puertas en el sweep: `pow(a, 2^j, N)` toma solo 5 valores distintos para N=33 → se descomponen 5 unitarios controlados una sola vez en lugar de O(Σ n_count)≈99 descomposiciones
 - Extracción de sub-periodos por fracciones continuas: puede devolver un divisor de r (no r mismo) y aun así factorizar si a^(r/2) ≢ ±1 (mod N)
-- Backend usado: `ibm_fez` para todos los casos de hardware real
+- Backend hardware usado: `ibm_kingston` (seleccionado por `least_busy()`)
 - `SamplerV2` + `generate_preset_pass_manager(optimization_level=1)`

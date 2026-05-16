@@ -10,7 +10,7 @@
   "n_train": 80,
   "n_test": 20,
   "random_seed": 42,
-  "train_time_s": 0.0014869579990772763,
+  "train_time_s": 0.0018922229937743396,
   "accuracy_test": 0.8,
   "accuracy_train": 0.9625,
   "cv_mean": 0.9400000000000001,

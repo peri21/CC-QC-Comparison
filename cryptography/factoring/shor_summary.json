@@ -1,0 +1,145 @@
+{
+  "N": [
+    15,
+    21,
+    33,
+    35,
+    77,
+    91,
+    143,
+    221
+  ],
+  "n_bits": [
+    4,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8
+  ],
+  "n_count": [
+    8,
+    10,
+    12,
+    12,
+    14,
+    14,
+    16,
+    16
+  ],
+  "trial_queries": [
+    2.0,
+    2.0,
+    2.0,
+    3.0,
+    4.0,
+    4.0,
+    6.0,
+    7.0
+  ],
+  "pollard_queries": [
+    1.2,
+    1.2,
+    1.2,
+    1.4,
+    1.4,
+    1.6,
+    2.0,
+    4.0
+  ],
+  "shor_depth": [
+    11,
+    13,
+    15,
+    15,
+    17,
+    17,
+    null,
+    null
+  ],
+  "shor_correct": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    null,
+    null
+  ],
+  "shor_real_time_total": [
+    33.45014951600024,
+    25.175532991997898,
+    65.1744098479976,
+    65.060869809,
+    null,
+    null,
+    null,
+    null
+  ],
+  "shor_real_correct": [
+    true,
+    true,
+    true,
+    true,
+    null,
+    null,
+    null,
+    null
+  ],
+  "shor_real_top_prob": [
+    0.1825,
+    0.0085,
+    0.019,
+    0.13,
+    null,
+    null,
+    null,
+    null
+  ],
+  "shor_real_ran": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+  ],
+  "sim_max_n": 100,
+  "real_max_n": 35,
+  "success_sweep": {
+    "N": 33,
+    "a": 2,
+    "n_counts": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "trials": 10,
+    "rates": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  }
+}
