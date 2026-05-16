@@ -5,6 +5,8 @@
 
 ---
 
+---
+
 ## cryptography/brute_force — COMPLETADO ✓
 
 Archivo único: `real_grover_comparison.ipynb`.
