@@ -52,7 +52,8 @@ CC-QC-Comparison/
 ├── cryptography/
 │   ├── brute_force/          real_grover_comparison.ipynb
 │   └── factoring/            real_shor_comparison.ipynb
-├── GUIA_EJECUCION.md         Detailed execution guide (in Spanish)
+├── EXECUTION_GUIDE.md        Detailed execution guide (English)
+├── GUIA_EJECUCION.md         Detailed execution guide (Spanish)
 ├── contexto_tfg.md           Thesis context and status (in Spanish)
 ├── commands.txt
 ├── hello_world.ipynb
@@ -97,9 +98,11 @@ CC-QC-Comparison/
    python authentication/verify_credentials.py
    ```
 
-   You need a free [IBM Quantum](https://quantum.cloud.ibm.com/) account and your own API key. 
+   You need a free [IBM Quantum](https://quantum.cloud.ibm.com/) account and your own API key. **Never commit your key to the repository.**
 
 ## Usage
+
+> For the full step-by-step instructions on running every experiment, see the **[Execution Guide](EXECUTION_GUIDE.md)** (also available [in Spanish](GUIA_EJECUCION.md)). What follows is a short summary.
 
 Start JupyterLab:
 
