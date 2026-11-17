@@ -8,13 +8,6 @@ This repository contains the thesis experiments: each quantum algorithm is imple
 
 The thesis introduces quantum computing and its relationship with artificial intelligence algorithms. It covers qubits, superposition, entanglement and the quantum computing model, reviews representative quantum algorithms, and studies quantum machine learning proposals. It then compares their potential with classical approaches and discusses open challenges and future research directions.
 
-- **Author:** _[author name]_
-- **Supervisor:** _[supervisor name]_
-- **University / Degree:** _[university and degree]_
-- **Year:** _[year]_
-
-**Keywords:** quantum computing, machine learning, cryptography, IBM, Qiskit, Python, classical computing.
-
 ## Experiments
 
 ### Cryptography (`cryptography/`)
