@@ -102,7 +102,7 @@ CC-QC-Comparison/
 
 ## Usage
 
-> For the full step-by-step instructions on running every experiment, see the **[Execution Guide](EXECUTION_GUIDE.md)** (also available [in Spanish](GUIA_EJECUCION.md)). What follows is a short summary.
+> For the full step-by-step instructions on running every experiment, see the **[Execution Guide](EXECUTION_GUIDE.md)**. What follows is a short summary.
 
 Start JupyterLab:
 
