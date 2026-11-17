@@ -97,7 +97,7 @@ CC-QC-Comparison/
    python authentication/verify_credentials.py
    ```
 
-   You need a free [IBM Quantum](https://quantum.cloud.ibm.com/) account and your own API key. **Never commit your key to the repository.**
+   You need a free [IBM Quantum](https://quantum.cloud.ibm.com/) account and your own API key. 
 
 ## Usage
 
